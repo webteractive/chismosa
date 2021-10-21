@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RelayController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::any('/relay/{id}', RelayController::class)->name('relay');
 
 Route::get('/', function () {
     return view('dashboard');
