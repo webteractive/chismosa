@@ -18,6 +18,11 @@ class Relay extends Model
 
     public function getEndpointAttribute()
     {
-    return route('relay', ['id' => $this->id]);
+        return route('relay', ['id' => $this->id]);
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(RelayLog::class);
     }
 }
