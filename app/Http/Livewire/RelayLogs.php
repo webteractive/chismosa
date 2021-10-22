@@ -43,7 +43,9 @@ class RelayLogs extends Component
     public function getLogsProperty()
     {
         if ($relay = $this->getRelayProperty()) {
-            return $relay->logs()->paginate(10);
+            return $relay->logs()
+                ->latest()
+                ->paginate(10);
         }
 
         return collect([]);
