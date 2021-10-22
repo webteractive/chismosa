@@ -19,5 +19,7 @@ class RelayReceiver
             'payload' => $payload,
             'relay_id' => $this->relayId
         ]);
+
+        logger()->info(json_encode($payload));
     }
 }
