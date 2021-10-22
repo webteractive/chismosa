@@ -3,11 +3,13 @@
 namespace App\Http\Livewire;
 
 use App\Models\Relay;
+use App\Support\Traits\WithModalHandlers;
 use Livewire\Component;
 
 class RelayForm extends Component
 {
-    public $opened = false;
+    use WithModalHandlers;
+
     public $relayId;
     public $relay;
     
@@ -18,7 +20,7 @@ class RelayForm extends Component
 
     public function create()
     {
-        $this->opened = true;
+        $this->openModal();
     }
 
     public function edit($id)
@@ -27,8 +29,9 @@ class RelayForm extends Component
             $this->fill([
                 'relayId' => $relay->id,
                 'relay' => $relay->toArray(),
-                'opened' => true
             ]);
+
+            $this->openModal();
         });
     }
 
