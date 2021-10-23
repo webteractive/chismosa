@@ -26,10 +26,6 @@ class Forge extends Message
                                             'content' => $this->payload('commit_message', '')
                                         ]],
                                         ['keyValue' => [
-                                            'topLabel' => 'Site',
-                                            'content' => $this->payload('site.name', '')
-                                        ]],
-                                        ['keyValue' => [
                                             'topLabel' => 'Commit',
                                             'content' => __('<a href=":url">:hash</a>', [
                                                 'url' => $this->payload('commit_url', '#'),
