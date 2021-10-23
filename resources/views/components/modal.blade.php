@@ -10,7 +10,7 @@
     @if ($opened)
         <div class="bg-white rounded-lg {{ $size }} max-h-screen overflow-y-auto shadow p-4 space-y-6">
             @if ($title)
-                <h2 class="modal-title text-xl leading-none">{{ $title }}</h2>
+                <h2 class="modal-title text-2xl leading-none font-bold">{{ $title }}</h2>
             @endif
 
             <div class="modal-body">

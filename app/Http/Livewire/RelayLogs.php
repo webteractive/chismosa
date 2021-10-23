@@ -27,6 +27,7 @@ class RelayLogs extends Component
     {
         $this->closeModal();
         $this->reset();
+        $this->resetPage();
     }
 
     public function getRelay($id)
