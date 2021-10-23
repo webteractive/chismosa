@@ -30,15 +30,14 @@ class Forge extends Message
                                             'content' => $this->payload('site.name', '')
                                         ]],
                                         ['keyValue' => [
-                                            'topLabel' => 'Commit URL',
-                                            'content' => $this->payload('commit_url', '')
+                                            'topLabel' => 'Commit',
+                                            'content' => __('<a href=":url">:hash</a>', [
+                                                'url' => $this->payload('commit_url', '#'),
+                                                'hash' => $this->payload('commit_hash', 'Hash'),
+                                            ])
                                         ]],
                                         ['keyValue' => [
-                                            'topLabel' => 'Commit Hash',
-                                            'content' => $this->payload('commit_hash', '')
-                                        ]],
-                                        ['keyValue' => [
-                                            'topLabel' => 'Commit Author',
+                                            'topLabel' => 'Author',
                                             'content' => $this->payload('commit_author', '')
                                         ]],
                                         ['keyValue' => [
