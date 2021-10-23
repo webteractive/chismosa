@@ -11,14 +11,18 @@ class Relay extends Model
 
     protected $fillable = [
         'name',
+        'type',
         'description',
+        'webhook_type',
         'webhook_url',
+        'secret',
+        'status',
         'user_id'
     ];
 
     public function getEndpointAttribute()
     {
-        return route('relay', ['id' => $this->id]);
+        return route('relay', ['id' => $this->id, 'key' => config('chismosa.key')]);
     }
 
     public function logs()

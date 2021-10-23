@@ -14,7 +14,10 @@ class AddMoreColumnsToRelaysTable extends Migration
     public function up()
     {
         Schema::table('relays', function (Blueprint $table) {
-            //
+            $table->string('type')->after('name');
+            $table->string('webhook_type')->after('description');
+            $table->longText('secret')->after('webhook_url');
+            $table->integer('status')->default(1)->after('secret');
         });
     }
 
@@ -26,7 +29,12 @@ class AddMoreColumnsToRelaysTable extends Migration
     public function down()
     {
         Schema::table('relays', function (Blueprint $table) {
-            //
+            $table->dropColumn([
+                'secret',
+                'status',
+                'webhook_type',
+                'type'
+            ]);
         });
     }
 }

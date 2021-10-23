@@ -7,6 +7,10 @@ use Livewire\Component;
 
 class Relays extends Component
 {
+    protected $listeners = [
+        'refresh' => '$refresh'
+    ];
+
     public function getRelaysProperty()
     {
         return Relay::all();

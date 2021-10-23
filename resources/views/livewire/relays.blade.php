@@ -9,22 +9,24 @@
                 <div class="p-4 bg-white border-b rounded-t-lg">
                     <h2 class="text-xl font-bold leading-none">{{ $relay->name }}</h2>
 
-                    @if ($relay->description)
-                        <p class="mt-2 text-sm">{{ $relay->description }}</p>
-                    @endif
-                    
-                    <div class="mt-2">
-                        <div>{{ __('Messages received from') }}</div>
-                        <div
-                            class="leading-none text-sm text-gray-600 hover:underline"
-                            x-data="clipboard"
-                            data-clipboard-text="{{ $relay->endpoint }}"
-                        >{{ $relay->endpoint }}</div>
-                    </div>
+                    <div class="space-y-3 mt-5">
+                        @if ($relay->description)
+                            <p class="text-sm leading-tight">{{ $relay->description }}</p>
+                        @endif
+                        
+                        <div>
+                            <div>{{ __('Messages received from') }}</div>
+                            <div
+                                class="leading-none text-sm text-gray-600 hover:underline"
+                                x-data="clipboard"
+                                data-clipboard-text="{{ $relay->endpoint }}"
+                            >{{ $relay->endpoint }}</div>
+                        </div>
 
-                    <div class="mt-2">
-                        <div>{{ __('Will be relayed to') }}</div>
-                        <div class="leading-none text-sm text-gray-600">{{ $relay->webhook_url }}</div>
+                        <div>
+                            <div>{{ __('Will be relayed to') }}</div>
+                            <div class="leading-none text-sm text-gray-600">{{ $relay->webhook_url }}</div>
+                        </div>
                     </div>
 
                     <div class="mt-6">

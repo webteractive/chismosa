@@ -2,24 +2,24 @@
 
 namespace App\Support;
 
+use App\Models\Relay;
 use App\Models\RelayLog;
+use Illuminate\Support\Facades\Http;
 
 class RelayReceiver
 {
-    protected $relayId;
+    protected $relay;
 
     public function __construct($relayId)
     {
-        $this->relayId = $relayId;
+        $this->relay = Relay::find($relayId);
     }
 
-    public function log($payload)
+    public function handle($payload)
     {
-        RelayLog::create([
-            'payload' => $payload,
-            'relay_id' => $this->relayId
-        ]);
-
-        logger()->info(json_encode($payload));
+        Relayer::make($this->relay)
+            ->withPayload($payload)
+            ->log()
+            ->notify();
     }
 }
