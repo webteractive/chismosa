@@ -4,7 +4,7 @@
     size="w-full md:w-[720px]"
 >
     @if ($this->relay)
-        <div class="logs -mx-4">
+        <div class="logs -mx-4 max-h-[60vh] overflow-y-auto">
             @foreach ($this->logs as $item)
                 <div class="border-b py-2 px-4 flex hover:bg-gray-50">
                     <div class="flex-0">{{ $item->created_at->toDateTimeString() }}</div>
