@@ -3,8 +3,9 @@
 namespace App\Http\Livewire;
 
 use App\Models\Relay;
-use App\Support\Traits\WithModalHandlers;
 use Livewire\Component;
+use Illuminate\Support\Facades\Hash;
+use App\Support\Traits\WithModalHandlers;
 
 class RelayForm extends Component
 {
@@ -39,9 +40,13 @@ class RelayForm extends Component
     {
         $this->validate([
             'relay.name' => 'required',
+            'relay.type' => 'required',
+            'relay.webhook_type' => 'required',
             'relay.webhook_url' => 'required|url',
         ], [
             'relay.name.required' => __('validation.required', ['attribute' => 'Name']),
+            'relay.type.required' => __('validation.required', ['attribute' => 'Type']),
+            'relay.webhook_type.required' => __('validation.required', ['attribute' => 'Webhook Type']),
             'relay.webhook_url.required' => __('validation.required', ['attribute' => 'Webhook URL']),
             'relay.webhook_url.url' => __('validation.url', ['attribute' => 'Webhook URL']),
         ]);
@@ -56,11 +61,13 @@ class RelayForm extends Component
     protected function store()
     {
         Relay::create(array_merge($this->relay, [
-            'user_id' => auth()->id()
+            'user_id' => auth()->id(),
+            'secret' => Hash::make(config('chismosa.key'))
         ]));
 
+        $this->emitTo('relays', 'refresh');
         // Notify toast
-        $this->reset();
+        $this->close();
     }
 
     protected function update()
@@ -69,13 +76,16 @@ class RelayForm extends Component
             $relay->update($this->relay);
         });
 
+        $this->emitTo('relays', 'refresh');
         // Notify toast
-        $this->reset();
+        $this->close();
     }
 
     public function close()
     {
         $this->reset();
+        $this->resetErrorBag();
+        $this->resetValidation();
     }
 
     public function getRelay($id)

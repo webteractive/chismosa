@@ -10,6 +10,24 @@
         </div>
 
         <div>
+            <x-label for="type" :value="__('Type')" required />
+            <x-select id="type" class="block mt-1 w-full" wire:model.lazy="relay.type">
+                <option value="">{{ __('Select') }}</option>
+                <option value="forge">Forge</option>
+            </x-select>
+            <x-validation-error for="relay.type" />
+        </div>
+
+        <div>
+            <x-label for="webhook_type" :value="__('Webhook Type')" required />
+            <x-select id="webhook_type" class="block mt-1 w-full" wire:model.lazy="relay.webhook_type">
+                <option value="">{{ __('Select') }}</option>
+                <option value="google_chat">Google Chat</option>
+            </x-select>
+            <x-validation-error for="relay.webhook_type" />
+        </div>
+
+        <div>
             <x-label for="webhook_url" :value="__('Webhook URL')" required />
             <x-textarea id="webhook_url" class="block mt-1 w-full" wire:model.lazy="relay.webhook_url" />
             <x-validation-error for="relay.webhook_url" />

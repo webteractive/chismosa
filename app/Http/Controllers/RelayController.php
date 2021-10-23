@@ -10,6 +10,6 @@ class RelayController extends Controller
     public function __invoke(Request $request)
     {
         (new RelayReceiver($request->id))
-            ->log($request->all());
+            ->handle($request->all());
     }
 }

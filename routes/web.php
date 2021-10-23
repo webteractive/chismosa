@@ -14,10 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::any('/relay/{id}', RelayController::class)->name('relay');
+Route::any('/relay/{id}/{key}', RelayController::class)
+    ->middleware(['relay.checkpoint'])
+    ->name('relay');
 
-Route::get('/', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+Route::view('/', 'dashboard')
+    ->middleware(['auth'])
+    ->name('dashboard');
 
 require __DIR__.'/auth.php';
