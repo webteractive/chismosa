@@ -54,6 +54,9 @@ class ManageRelayKeyAction extends Action
                 $record->fill($data);
                 $record->save();
 
+                // Clear the cached relay key so it refreshes immediately
+                cache()->forget('relay-key-current');
+
                 Notification::make()
                     ->success()
                     ->title('Relay key saved successfully')

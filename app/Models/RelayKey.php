@@ -16,6 +16,8 @@ class RelayKey extends Model
 
     public static function current(): ?string
     {
-        return static::query()->first()?->key;
+        return cache()->remember('relay-key-current', now()->addMinutes(5), function () {
+            return static::query()->first()?->key;
+        });
     }
 }
