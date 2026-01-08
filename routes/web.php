@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\RelayController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\RelayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,9 +17,3 @@ use Illuminate\Support\Facades\Route;
 Route::any('/relay/{id}/{key}', RelayController::class)
     ->middleware(['relay.checkpoint'])
     ->name('relay');
-
-Route::view('/', 'dashboard')
-    ->middleware(['auth'])
-    ->name('dashboard');
-
-require __DIR__.'/auth.php';

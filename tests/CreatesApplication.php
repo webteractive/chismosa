@@ -17,6 +17,12 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
 
+        // Ensure SQLite is used for testing and MySQL is never touched
+        config([
+            'database.default' => 'sqlite',
+            'database.connections.sqlite.database' => ':memory:',
+        ]);
+
         return $app;
     }
 }

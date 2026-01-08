@@ -1,15 +1,15 @@
-require('./bootstrap');
+import './bootstrap';
+import Alpine from 'alpinejs';
+import ClipboardJS from 'clipboard';
 
-import Alpine from 'alpinejs'
- 
-window.Alpine = Alpine
+window.Alpine = Alpine;
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('clipboard', () => ({
         init() {
-            new ClipboardJS(this.$el)
+            new ClipboardJS(this.$el);
         }
-    }))
-})
- 
-Alpine.start()
+    }));
+});
+
+Alpine.start();

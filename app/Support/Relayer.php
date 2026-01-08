@@ -8,10 +8,11 @@ use App\Support\Messages\Forge;
 class Relayer
 {
     protected $relay;
+
     protected $payload;
 
     protected $messages = [
-        'forge' => Forge::class
+        'forge' => Forge::class,
     ];
 
     public function __construct($relay)
@@ -27,6 +28,7 @@ class Relayer
     public function withPayload($payload)
     {
         $this->payload = $payload;
+
         return $this;
     }
 
@@ -34,7 +36,7 @@ class Relayer
     {
         RelayLog::create([
             'payload' => $this->payload,
-            'relay_id' => $this->relay->id
+            'relay_id' => $this->relay->id,
         ]);
 
         return $this;

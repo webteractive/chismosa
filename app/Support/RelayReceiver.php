@@ -3,8 +3,6 @@
 namespace App\Support;
 
 use App\Models\Relay;
-use App\Models\RelayLog;
-use Illuminate\Support\Facades\Http;
 
 class RelayReceiver
 {

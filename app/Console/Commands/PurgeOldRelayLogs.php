@@ -23,6 +23,7 @@ class PurgeOldRelayLogs extends Command
             ->delete();
 
         $this->info(__(':count old relay logs has been purged.', ['count' => $deleted]));
+
         return 0;
     }
 }

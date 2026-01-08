@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Relay extends Model
 {
@@ -17,16 +17,27 @@ class Relay extends Model
         'webhook_url',
         'secret',
         'status',
-        'user_id'
+        'user_id',
     ];
 
-    public function getEndpointAttribute()
+    public function getEndpointAttribute(): ?string
     {
-        return route('relay', ['id' => $this->id, 'key' => config('chismosa.key')]);
+        $key = RelayKey::current();
+
+        if (! $key) {
+            return null;
+        }
+
+        return route('relay', ['id' => $this->id, 'key' => $key]);
     }
 
     public function logs()
     {
         return $this->hasMany(RelayLog::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class RelayLog extends Model
 {
@@ -11,11 +11,11 @@ class RelayLog extends Model
 
     protected $fillable = [
         'payload',
-        'relay_id'
+        'relay_id',
     ];
 
     protected $casts = [
-        'payload' => 'array'
+        'payload' => 'array',
     ];
 
     public function relay()

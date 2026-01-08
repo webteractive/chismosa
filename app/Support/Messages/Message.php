@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 abstract class Message
 {
     protected $relay;
+
     protected $payload;
 
     public function __construct($relay, $payload)
