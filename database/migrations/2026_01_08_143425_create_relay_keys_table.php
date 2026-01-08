@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('relay_keys')) {
+            return;
+        }
+
         Schema::create('relay_keys', function (Blueprint $table) {
             $table->id();
             $table->string('key');
