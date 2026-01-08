@@ -55,7 +55,7 @@ class ManageRelayKeyAction extends Action
                 $record->save();
 
                 // Clear the cached relay key so it refreshes immediately
-                cache()->forget('relay-key-current');
+                \Illuminate\Support\Facades\Cache::forget('relay-key-current');
 
                 Notification::make()
                     ->success()
