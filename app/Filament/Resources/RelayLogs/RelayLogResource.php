@@ -73,7 +73,11 @@ class RelayLogResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('relay_id')
+                    ->label('Relay')
+                    ->relationship('relay', 'name')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Actions\ActionGroup::make([

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Speech bubble -->
+  <path d="M20 20 Q20 15 25 15 L65 15 Q70 15 70 20 L70 50 Q70 55 65 55 L45 55 L35 65 L35 55 L25 55 Q20 55 20 50 Z" fill="#000000" stroke="#000000" stroke-width="2"/>
+  
+  <!-- Shh gesture lines -->
+  <line x1="30" y1="35" x2="40" y2="35" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <line x1="45" y1="35" x2="55" y2="35" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <line x1="30" y1="42" x2="50" y2="42" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Sound waves -->
+  <path d="M75 30 Q80 30 80 35 Q80 40 75 40" stroke="#000000" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M75 25 Q85 25 85 35 Q85 45 75 45" stroke="#000000" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>

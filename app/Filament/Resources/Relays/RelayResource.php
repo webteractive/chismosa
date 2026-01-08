@@ -110,9 +110,8 @@ class RelayResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('endpoint')
                     ->label('Endpoint')
-                    ->copyable()
+                    ->copyable(fn (?string $state): bool => $state !== null)
                     ->copyMessage('Endpoint copied!')
-                    ->searchable(false)
                     ->formatStateUsing(fn (?string $state): string => $state ?? 'Set relay key first')
                     ->placeholder('Set relay key first'),
                 Tables\Columns\TextColumn::make('status')
