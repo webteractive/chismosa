@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'relay.checkpoint' => \App\Http\Middleware\RelayCheckpoint::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'relay/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
