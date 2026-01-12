@@ -17,7 +17,7 @@ use App\Http\Controllers\RelayController;
 */
 
 Route::any('/relay/{id}/{key}', RelayController::class)
-    ->middleware(['relay.checkpoint'])
+    ->middleware(['relay.checkpoint', 'throttle:30,1'])
     ->name('relay');
 
 Route::fallback(function () {
@@ -28,7 +28,7 @@ Route::fallback(function () {
 
     // Exclude specific paths that should return 404
     if (str_starts_with($path, 'relay') ||
-        str_starts_with($path, 'admin') ||
+        str_starts_with($path, config('chismosa.admin_path')) ||
         str_starts_with($path, 'livewire') ||
         str_starts_with($path, '_')) {
         abort(404);

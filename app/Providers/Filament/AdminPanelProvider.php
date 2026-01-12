@@ -27,7 +27,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path(config('chismosa.admin_path'))
             ->login()
             ->favicon(asset('images/favicon.svg'))
             ->colors([
