@@ -52,7 +52,7 @@ test('a relay can be created from the admin panel', function () {
             'name' => 'Production deploys',
             'type' => 'forge',
             'webhook_type' => 'google_chat',
-            'webhook_url' => 'https://example.com/webhook',
+            'webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages',
             'status' => 1,
             'user_id' => $user->id,
         ])
@@ -64,4 +64,22 @@ test('a relay can be created from the admin panel', function () {
         'status' => 1,
         'user_id' => $user->id,
     ]);
+});
+
+test('a relay cannot be pointed at a webhook URL outside Google Chat', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    Livewire::test(ManageRelays::class)
+        ->callAction('create', [
+            'name' => 'Internal probe',
+            'type' => 'forge',
+            'webhook_type' => 'google_chat',
+            'webhook_url' => 'http://127.0.0.1:6379/',
+            'status' => 1,
+            'user_id' => $user->id,
+        ])
+        ->assertHasActionErrors(['webhook_url']);
+
+    $this->assertDatabaseMissing('relays', ['name' => 'Internal probe']);
 });

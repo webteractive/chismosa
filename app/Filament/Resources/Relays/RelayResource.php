@@ -11,6 +11,7 @@ use Filament\Infolists;
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
+use App\Rules\DestinationWebhookUrl;
 use App\Filament\Actions\TestRelayAction;
 use Filament\Tables\Enums\RecordActionsPosition;
 
@@ -31,21 +32,24 @@ class RelayResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('type')
                     ->required()
-                    ->options(config('chismosa.services', []))
+                    ->options(config('chismosa.sources', []))
                     ->native(false),
                 Forms\Components\Textarea::make('description')
                     ->maxLength(65535)
                     ->columnSpanFull(),
                 Forms\Components\Select::make('webhook_type')
                     ->required()
-                    ->options([
-                        'google_chat' => 'Google Chat',
-                        'forge' => 'Laravel Forge',
-                    ])
+                    ->options(
+                        collect(config('chismosa.destinations', []))
+                            ->map(fn (array $destination): string => $destination['label'])
+                            ->all()
+                    )
                     ->native(false),
                 Forms\Components\TextInput::make('webhook_url')
                     ->required()
                     ->url()
+                    ->rule(new DestinationWebhookUrl)
+                    ->helperText('An incoming webhook URL. Must be '.DestinationWebhookUrl::requirement().'.')
                     ->maxLength(65535),
                 Forms\Components\Select::make('status')
                     ->required()

@@ -9,6 +9,7 @@ use Laravel\Mcp\Server\Tool;
 use Illuminate\Validation\Rule;
 use Laravel\Mcp\ResponseFactory;
 use App\Support\CredentialReveal;
+use App\Rules\DestinationWebhookUrl;
 use App\Mcp\Concerns\PresentsRecords;
 use Illuminate\JsonSchema\Types\Type;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -23,14 +24,15 @@ class CreateRelayTool extends Tool
 
     public function handle(Request $request): ResponseFactory
     {
-        $services = array_keys(config('chismosa.services', []));
+        $sources = array_keys(config('chismosa.sources', []));
+        $destinations = array_keys(config('chismosa.destinations', []));
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'type' => ['required', Rule::in($services)],
+            'type' => ['required', Rule::in($sources)],
             'description' => ['nullable', 'string', 'max:65535'],
-            'webhook_type' => ['required', Rule::in($services)],
-            'webhook_url' => ['required', 'url', 'max:65535'],
+            'webhook_type' => ['required', Rule::in($destinations)],
+            'webhook_url' => ['required', 'url', 'max:65535', new DestinationWebhookUrl],
             'active' => ['nullable', 'boolean'],
             'user_id' => ['nullable', 'integer', Rule::exists('users', 'id')],
         ]);
@@ -56,14 +58,15 @@ class CreateRelayTool extends Tool
      */
     public function schema(JsonSchema $schema): array
     {
-        $services = array_keys(config('chismosa.services', []));
+        $sources = array_keys(config('chismosa.sources', []));
+        $destinations = array_keys(config('chismosa.destinations', []));
 
         return [
             'name' => $schema->string()->description('A name for the relay.')->required(),
-            'type' => $schema->string()->enum($services)->description('The service that sends webhooks to this relay.')->required(),
+            'type' => $schema->string()->enum($sources)->description('The service that sends webhooks to this relay.')->required(),
             'description' => $schema->string()->description('What the relay is for.'),
-            'webhook_type' => $schema->string()->enum($services)->description('The kind of destination messages are forwarded to.')->required(),
-            'webhook_url' => $schema->string()->description('The destination webhook URL messages are forwarded to.')->required(),
+            'webhook_type' => $schema->string()->enum($destinations)->description('The kind of destination messages are forwarded to.')->required(),
+            'webhook_url' => $schema->string()->description('The destination webhook URL messages are forwarded to. Must be '.DestinationWebhookUrl::requirement().'.')->required(),
             'active' => $schema->boolean()->description('Whether the relay accepts webhooks. Defaults to true.'),
             'user_id' => $schema->integer()->description('The owning user. Defaults to the signed-in user.'),
         ];

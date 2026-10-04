@@ -25,7 +25,7 @@
             <h2>{{ $relay->name }}</h2>
 
             <div class="field">
-                <label for="endpoint-{{ $relay->id }}">Endpoint to give {{ config('chismosa.services')[$relay->type] ?? $relay->type }}</label>
+                <label for="endpoint-{{ $relay->id }}">Endpoint to give {{ config('chismosa.sources')[$relay->type] ?? $relay->type }}</label>
                 <div class="row">
                     <input id="endpoint-{{ $relay->id }}" type="text" readonly value="{{ $relay->endpoint ?? 'Set a relay key first' }}">
                     <button type="button" data-copy="endpoint-{{ $relay->id }}">Copy</button>

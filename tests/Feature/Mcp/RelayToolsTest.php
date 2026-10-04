@@ -97,7 +97,7 @@ describe('create-relay', function () {
                 'name' => 'Deploys',
                 'type' => 'forge',
                 'webhook_type' => 'google_chat',
-                'webhook_url' => 'https://chat.example.com/hook/secret-token',
+                'webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=secret-token',
             ])
             ->assertOk()
             ->assertDontSee('secret-token');
@@ -106,7 +106,7 @@ describe('create-relay', function () {
             'name' => 'Deploys',
             'type' => 'forge',
             'webhook_type' => 'google_chat',
-            'webhook_url' => 'https://chat.example.com/hook/secret-token',
+            'webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=secret-token',
             'status' => 1,
             'user_id' => $user->id,
         ]);
@@ -122,7 +122,7 @@ describe('create-relay', function () {
                 'name' => 'Deploys',
                 'type' => 'forge',
                 'webhook_type' => 'google_chat',
-                'webhook_url' => 'https://chat.example.com/hook/secret-token',
+                'webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=secret-token',
             ])
             ->assertOk()
             ->assertDontSee(['the-relay-key', 'secret-token'])
@@ -140,7 +140,7 @@ describe('create-relay', function () {
             ->get($link)
             ->assertOk()
             ->assertSee('the-relay-key')
-            ->assertSee('https://chat.example.com/hook/secret-token');
+            ->assertSee('https://chat.googleapis.com/v1/spaces/AAA/messages?key=secret-token');
     });
 
     it('rejects a service type that is not supported', function () {
@@ -149,7 +149,7 @@ describe('create-relay', function () {
                 'name' => 'Deploys',
                 'type' => 'github',
                 'webhook_type' => 'google_chat',
-                'webhook_url' => 'https://chat.example.com/hook',
+                'webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages',
             ])
             ->assertHasErrors(['The selected type is invalid.']);
 
@@ -168,9 +168,52 @@ describe('create-relay', function () {
 
         $this->assertDatabaseCount(Relay::class, 0);
     });
+
+    it('rejects a webhook URL that is not on Google Chat', function (string $url) {
+        ChismosaServer::actingAs(User::factory()->create())
+            ->tool(CreateRelayTool::class, [
+                'name' => 'Deploys',
+                'type' => 'forge',
+                'webhook_type' => 'google_chat',
+                'webhook_url' => $url,
+            ])
+            ->assertHasErrors(['The webhook url must be an https URL on chat.googleapis.com.']);
+
+        $this->assertDatabaseCount(Relay::class, 0);
+    })->with([
+        'internal address' => ['http://127.0.0.1:6379/'],
+        'cloud metadata' => ['http://169.254.169.254/latest/meta-data'],
+        'plain http google chat' => ['http://chat.googleapis.com/v1/spaces/AAA/messages'],
+        'lookalike host' => ['https://chat.googleapis.com.evil.tld/v1/spaces/AAA/messages'],
+        'credentials in front of the host' => ['https://chat.googleapis.com@evil.tld/v1/spaces/AAA/messages'],
+    ]);
+
+    it('rejects a type pairing nothing can deliver', function (string $type, string $webhookType, string $error) {
+        ChismosaServer::actingAs(User::factory()->create())
+            ->tool(CreateRelayTool::class, [
+                'name' => 'Deploys',
+                'type' => $type,
+                'webhook_type' => $webhookType,
+                'webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages',
+            ])
+            ->assertHasErrors([$error]);
+    })->with([
+        'google chat as the sender' => ['google_chat', 'google_chat', 'The selected type is invalid.'],
+        'forge as the destination' => ['forge', 'forge', 'The selected webhook type is invalid.'],
+    ]);
 });
 
 describe('update-relay', function () {
+    it('rejects moving a relay to a webhook URL that is not on Google Chat', function () {
+        $relay = Relay::factory()->create();
+
+        ChismosaServer::actingAs(User::factory()->create())
+            ->tool(UpdateRelayTool::class, ['id' => $relay->id, 'webhook_url' => 'http://10.0.0.5/hook'])
+            ->assertHasErrors(['The webhook url must be an https URL on chat.googleapis.com.']);
+
+        expect($relay->fresh()->webhook_url)->toBe($relay->webhook_url);
+    });
+
     it('deactivates a relay and leaves its other fields alone', function () {
         $relay = Relay::factory()->active()->create(['name' => 'Deploys']);
 
