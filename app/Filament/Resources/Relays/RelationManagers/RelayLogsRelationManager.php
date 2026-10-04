@@ -60,9 +60,6 @@ class RelayLogsRelationManager extends RelationManager
             ->filters([
                 //
             ])
-            ->headerActions([
-                // Actions\CreateAction::make(),
-            ])
             ->actions([
                 Actions\ActionGroup::make([
                     Actions\ViewAction::make(),

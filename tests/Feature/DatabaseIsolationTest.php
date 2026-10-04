@@ -16,10 +16,8 @@ test('mysql connection is not used', function () {
 });
 
 test('can create tables in memory database', function () {
-    // This test verifies that migrations can run in the in-memory database
     $this->artisan('migrate')->assertSuccessful();
 
-    // Verify migrations table exists
     $tables = DB::select("SELECT name FROM sqlite_master WHERE type='table'");
     $tableNames = array_column($tables, 'name');
 

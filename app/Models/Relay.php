@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Relay extends Model
@@ -15,7 +17,6 @@ class Relay extends Model
         'description',
         'webhook_type',
         'webhook_url',
-        'secret',
         'status',
         'user_id',
     ];
@@ -31,12 +32,17 @@ class Relay extends Model
         return route('relay', ['id' => $this->id, 'key' => $key]);
     }
 
-    public function logs()
+    public function isActive(): bool
+    {
+        return (bool) $this->status;
+    }
+
+    public function logs(): HasMany
     {
         return $this->hasMany(RelayLog::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

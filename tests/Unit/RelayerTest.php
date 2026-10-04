@@ -4,9 +4,12 @@ use App\Models\User;
 use App\Models\Relay;
 use App\Models\RelayLog;
 use App\Support\Relayer;
+use App\Jobs\SendRelayMessage;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 test('relayer can be created with make', function () {
     $user = User::factory()->create();
@@ -77,4 +80,55 @@ test('relayer does not send notification for unknown type', function () {
         ->notify();
 
     Http::assertNothingSent();
+});
+
+test('relayer queues the notification instead of sending it inline', function () {
+    $relay = Relay::factory()->create([
+        'type' => 'forge',
+        'webhook_url' => 'https://example.com/webhook',
+    ]);
+
+    $payload = ['status' => 'success', 'commit_message' => 'Test commit'];
+
+    Queue::fake();
+    Http::fake();
+
+    Relayer::make($relay)
+        ->withPayload($payload)
+        ->notify();
+
+    Queue::assertPushed(
+        SendRelayMessage::class,
+        fn (SendRelayMessage $job) => $job->relay->is($relay) && $job->payload === $payload
+    );
+    Http::assertNothingSent();
+});
+
+test('relayer does not queue a notification for a type without a message', function () {
+    $relay = Relay::factory()->create(['type' => 'google_chat']);
+
+    Queue::fake();
+
+    Relayer::make($relay)
+        ->withPayload(['status' => 'success'])
+        ->notify();
+
+    Queue::assertNothingPushed();
+});
+
+test('relayer send delivers the message immediately', function () {
+    $relay = Relay::factory()->create([
+        'type' => 'forge',
+        'webhook_url' => 'https://example.com/webhook',
+    ]);
+
+    Queue::fake();
+    Http::fake();
+
+    Relayer::make($relay)
+        ->withPayload(['status' => 'success'])
+        ->send();
+
+    Http::assertSentCount(1);
+    Queue::assertNothingPushed();
 });

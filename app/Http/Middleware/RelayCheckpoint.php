@@ -6,27 +6,32 @@ use Closure;
 use App\Models\Relay;
 use App\Models\RelayKey;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\Response;
 
 class RelayCheckpoint
 {
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        if ($relay = Relay::find($request->id)) {
-            $storedKey = RelayKey::current();
-            $requestKey = $request->route('key');
+        $relay = Relay::find($request->route('id'));
 
-            if ($storedKey && $requestKey === $storedKey && Hash::check($storedKey, $relay->secret)) {
-                return $next($request);
-            }
+        if (! $relay) {
+            $this->logAndAbort(__('Relay :id not found.', ['id' => $request->route('id')]));
+        }
 
+        if (! $relay->isActive()) {
+            $this->logAndAbort(__('Relay :id is inactive.', ['id' => $relay->id]));
+        }
+
+        $storedKey = RelayKey::current();
+
+        if (! $storedKey || ! hash_equals($storedKey, (string) $request->route('key'))) {
             $this->logAndAbort('Relay not authorized.');
         }
 
-        $this->logAndAbort(__('Relay :id not found.', ['id' => $request->id]));
+        return $next($request);
     }
 
-    public function logAndAbort($message)
+    protected function logAndAbort(string $message): never
     {
         logger()->info(__CLASS__.': '.$message);
         abort(404);

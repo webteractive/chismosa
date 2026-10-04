@@ -42,3 +42,26 @@ test('admin tables list their records', function () {
     Livewire::test(ManageRelayLogs::class)->assertCanSeeTableRecords($logs);
     Livewire::test(ManageUsers::class)->assertCanSeeTableRecords(User::all());
 });
+
+test('a relay can be created from the admin panel', function () {
+    $user = User::factory()->create();
+    $this->actingAs($user);
+
+    Livewire::test(ManageRelays::class)
+        ->callAction('create', [
+            'name' => 'Production deploys',
+            'type' => 'forge',
+            'webhook_type' => 'google_chat',
+            'webhook_url' => 'https://example.com/webhook',
+            'status' => 1,
+            'user_id' => $user->id,
+        ])
+        ->assertHasNoActionErrors();
+
+    $this->assertDatabaseHas('relays', [
+        'name' => 'Production deploys',
+        'type' => 'forge',
+        'status' => 1,
+        'user_id' => $user->id,
+    ]);
+});

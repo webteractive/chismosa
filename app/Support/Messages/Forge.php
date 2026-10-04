@@ -6,9 +6,10 @@ use Illuminate\Support\Facades\Http;
 
 class Forge extends Message
 {
-    public function send()
+    public function send(): void
     {
         Http::asJson()
+            ->timeout(10)
             ->post($this->relay->webhook_url, [
                 'cards' => [
                     [
@@ -50,6 +51,7 @@ class Forge extends Message
                         ],
                     ],
                 ],
-            ]);
+            ])
+            ->throw();
     }
 }

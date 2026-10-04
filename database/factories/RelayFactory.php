@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\User;
 use App\Models\Relay;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RelayFactory extends Factory
@@ -19,8 +18,7 @@ class RelayFactory extends Factory
             'description' => $this->faker->sentence(),
             'webhook_type' => $this->faker->randomElement(['google_chat', 'forge']),
             'webhook_url' => $this->faker->url(),
-            'secret' => Hash::make(\App\Models\RelayKey::current() ?? 'default-secret'),
-            'status' => $this->faker->randomElement([0, 1]),
+            'status' => 1,
             'user_id' => User::factory(),
         ];
     }

@@ -11,12 +11,7 @@ class PurgeOldRelayLogs extends Command
 
     protected $description = 'Purge old relay logs';
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    public function handle()
+    public function handle(): int
     {
         $deleted = RelayLog::query()
             ->where('created_at', '<=', now()->subMonth())
@@ -24,6 +19,6 @@ class PurgeOldRelayLogs extends Command
 
         $this->info(__(':count old relay logs has been purged.', ['count' => $deleted]));
 
-        return 0;
+        return self::SUCCESS;
     }
 }

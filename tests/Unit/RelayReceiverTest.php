@@ -5,8 +5,9 @@ use App\Models\Relay;
 use App\Models\RelayLog;
 use App\Support\RelayReceiver;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 test('relay receiver handles payload', function () {
     $user = User::factory()->create();
@@ -26,7 +27,6 @@ test('relay receiver handles payload', function () {
     $receiver = new RelayReceiver($relay->id);
     $receiver->handle($payload);
 
-    // Verify log was created
     $this->assertDatabaseHas('relay_logs', [
         'relay_id' => $relay->id,
     ]);

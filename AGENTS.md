@@ -1,3 +1,11 @@
+<documan-context>
+This project is documented in Documan under the project slug `chismosa`.
+
+- Before exploring the code for a task, call the Documan MCP tool `get_context` with project `chismosa` and a short description of the task. It returns the relevant feature docs and the exact files to open.
+- Before editing a file, call `find_feature_by_file` to find the feature that documents it.
+- After changing documented behavior, update the feature with `document`.
+</documan-context>
+
 <laravel-boost-guidelines>
 === foundation rules ===
 

@@ -4,9 +4,9 @@ use App\Models\User;
 use App\Models\Relay;
 use App\Models\RelayKey;
 use App\Models\RelayLog;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     RelayKey::factory()->create(['key' => 'test-secret-key']);
@@ -50,7 +50,6 @@ test('relay fillable attributes', function () {
         'description' => 'Test Description',
         'webhook_type' => 'google_chat',
         'webhook_url' => 'https://example.com/webhook',
-        'secret' => Hash::make('secret'),
         'status' => 1,
         'user_id' => $user->id,
     ]);
@@ -62,4 +61,9 @@ test('relay fillable attributes', function () {
         ->and($relay->webhook_url)->toBe('https://example.com/webhook')
         ->and($relay->status)->toBe(1)
         ->and($relay->user_id)->toBe($user->id);
+});
+
+test('relay reports whether it is active', function () {
+    expect(Relay::factory()->active()->create()->isActive())->toBeTrue()
+        ->and(Relay::factory()->inactive()->create()->isActive())->toBeFalse();
 });

@@ -6,14 +6,17 @@ use App\Models\Relay;
 
 class RelayReceiver
 {
-    protected $relay;
+    protected Relay $relay;
 
-    public function __construct($relayId)
+    public function __construct(int|string $relayId)
     {
-        $this->relay = Relay::find($relayId);
+        $this->relay = Relay::findOrFail($relayId);
     }
 
-    public function handle($payload)
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    public function handle(array $payload): void
     {
         Relayer::make($this->relay)
             ->withPayload($payload)

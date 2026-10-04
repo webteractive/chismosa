@@ -3,8 +3,9 @@
 use App\Models\User;
 use App\Models\Relay;
 use App\Models\RelayLog;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(RefreshDatabase::class);
 
 test('relay log belongs to relay', function () {
     $user = User::factory()->create();

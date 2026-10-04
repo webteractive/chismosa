@@ -7,6 +7,7 @@ use Filament\PanelProvider;
 use Filament\Pages\Dashboard;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
+use Filament\Navigation\NavigationItem;
 use Filament\Widgets\FilamentInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use App\Filament\Actions\ManageRelayKeyAction;
@@ -42,6 +43,13 @@ class AdminPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
+            ])
+            ->navigationItems([
+                NavigationItem::make('Horizon')
+                    ->url(fn (): string => url(config('horizon.path')))
+                    ->icon('heroicon-o-queue-list')
+                    ->openUrlInNewTab()
+                    ->sort(100),
             ])
             ->userMenuItems([
                 ManageRelayKeyAction::make(),

@@ -5,17 +5,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RelayController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 Route::any('/relay/{id}/{key}', RelayController::class)
     ->middleware(['relay.checkpoint', 'throttle:30,1'])
     ->name('relay');
@@ -26,7 +15,6 @@ Route::fallback(function () {
     $ip = $request->ip();
     $userAgent = $request->userAgent();
 
-    // Exclude specific paths that should return 404
     if (str_starts_with($path, 'relay') ||
         str_starts_with($path, config('chismosa.admin_path')) ||
         str_starts_with($path, 'livewire') ||
@@ -34,13 +22,11 @@ Route::fallback(function () {
         abort(404);
     }
 
-    // Track requests per IP for abuse detection
     $cacheKey = "fallback-requests:{$ip}";
     $requestCount = Cache::get($cacheKey, 0);
     $requestCount++;
     Cache::put($cacheKey, $requestCount, now()->addMinutes(15));
 
-    // Log fallback route usage
     Log::info('Fallback route accessed', [
         'ip' => $ip,
         'path' => $path,
@@ -49,7 +35,6 @@ Route::fallback(function () {
         'method' => $request->method(),
     ]);
 
-    // Detect potential abuse (more than 30 requests in 15 minutes)
     if ($requestCount > 30) {
         Log::warning('Potential abuse detected on fallback route', [
             'ip' => $ip,
@@ -83,4 +68,4 @@ Route::fallback(function () {
 
     return response($quote, 200)
         ->header('Content-Type', 'text/plain');
-})->middleware('throttle:60,1'); // 60 requests per minute
+})->middleware('throttle:60,1');

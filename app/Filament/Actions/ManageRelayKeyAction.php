@@ -5,6 +5,7 @@ namespace App\Filament\Actions;
 use App\Models\RelayKey;
 use Illuminate\Support\Str;
 use Filament\Actions\Action;
+use Illuminate\Support\Facades\Cache;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 
@@ -54,8 +55,7 @@ class ManageRelayKeyAction extends Action
                 $record->fill($data);
                 $record->save();
 
-                // Clear the cached relay key so it refreshes immediately
-                \Illuminate\Support\Facades\Cache::forget('relay-key-current');
+                Cache::forget('relay-key-current');
 
                 Notification::make()
                     ->success()

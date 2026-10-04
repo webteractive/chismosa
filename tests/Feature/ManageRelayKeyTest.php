@@ -5,7 +5,9 @@ use App\Models\RelayKey;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(\Illuminate\Foundation\Testing\RefreshDatabase::class);
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->actingAs(User::factory()->create());
