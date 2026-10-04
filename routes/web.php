@@ -4,10 +4,20 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RelayController;
+use App\Http\Controllers\CredentialRevealController;
 
 Route::any('/relay/{id}/{key}', RelayController::class)
     ->middleware(['relay.checkpoint', 'throttle:30,1'])
     ->name('relay');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/credentials/{reveal}', [CredentialRevealController::class, 'show'])
+        ->middleware('signed')
+        ->name('credentials.show');
+
+    Route::delete('/credentials/{reveal}', [CredentialRevealController::class, 'destroy'])
+        ->name('credentials.destroy');
+});
 
 Route::fallback(function () {
     $request = request();
@@ -18,6 +28,7 @@ Route::fallback(function () {
     if (str_starts_with($path, 'relay') ||
         str_starts_with($path, config('chismosa.admin_path')) ||
         str_starts_with($path, 'livewire') ||
+        str_starts_with($path, 'credentials') ||
         str_starts_with($path, '_')) {
         abort(404);
     }

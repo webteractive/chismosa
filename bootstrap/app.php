@@ -1,5 +1,6 @@
 <?php
 
+use Filament\Facades\Filament;
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\RelayCheckpoint;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'relay.checkpoint' => RelayCheckpoint::class,
         ]);
+
+        $middleware->redirectGuestsTo(fn (): ?string => Filament::getLoginUrl());
 
         $middleware->preventRequestForgery(except: [
             'relay/*',

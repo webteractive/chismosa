@@ -3,9 +3,7 @@
 namespace App\Filament\Actions;
 
 use App\Models\RelayKey;
-use Illuminate\Support\Str;
 use Filament\Actions\Action;
-use Illuminate\Support\Facades\Cache;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 
@@ -38,24 +36,12 @@ class ManageRelayKeyAction extends Action
                             ->icon('heroicon-o-arrow-path')
                             ->label('Generate')
                             ->action(function ($set): void {
-                                $ulid1 = (string) Str::ulid();
-                                $ulid2 = (string) Str::ulid();
-                                $random = Str::random(12);
-                                $set('key', $ulid1.$ulid2.$random);
+                                $set('key', RelayKey::generate());
                             })
                     ),
             ])
             ->action(function (array $data): void {
-                $record = RelayKey::query()->first();
-
-                if (! $record) {
-                    $record = new RelayKey;
-                }
-
-                $record->fill($data);
-                $record->save();
-
-                Cache::forget('relay-key-current');
+                RelayKey::store($data['key']);
 
                 Notification::make()
                     ->success()
