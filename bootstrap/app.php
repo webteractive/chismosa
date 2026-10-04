@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\RelayCheckpoint;
@@ -24,5 +25,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // A guest on /mcp must get a 401, never a redirect that reveals the hidden admin login path.
+        $exceptions->shouldRenderJsonWhen(fn (Request $request): bool => $request->is('mcp') || $request->expectsJson());
     })->create();

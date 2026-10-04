@@ -25,6 +25,15 @@ it('returns 401 pointing at the OAuth metadata when no token is provided', funct
         ->toContain('resource_metadata="'.url('/.well-known/oauth-protected-resource/mcp').'"');
 });
 
+it('returns 401 rather than redirecting to the hidden admin login when the client does not ask for json', function () {
+    $response = $this->post('/mcp', ['jsonrpc' => '2.0', 'id' => 1, 'method' => 'tools/list']);
+
+    $response->assertUnauthorized();
+
+    expect($response->headers->get('Location'))->toBeNull()
+        ->and($response->headers->get('WWW-Authenticate'))->toContain('resource_metadata=');
+});
+
 it('lists the tools for a signed-in token holder', function () {
     Passport::actingAs(User::factory()->create(), ['mcp:use'], 'api');
 
