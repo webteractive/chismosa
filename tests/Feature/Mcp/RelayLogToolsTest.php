@@ -3,9 +3,12 @@
 use App\Models\User;
 use App\Models\Relay;
 use App\Models\RelayLog;
+use App\Jobs\SendRelayMessage;
 use App\Mcp\Tools\GetRelayLogTool;
 use App\Mcp\Servers\ChismosaServer;
 use App\Mcp\Tools\ListRelayLogsTool;
+use App\Mcp\Tools\ResendRelayLogTool;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -53,6 +56,45 @@ describe('get-relay-log', function () {
     it('returns an error when the log does not exist', function () {
         ChismosaServer::actingAs(User::factory()->create())
             ->tool(GetRelayLogTool::class, ['id' => 999])
+            ->assertHasErrors(['Relay log 999 was not found.']);
+    });
+});
+
+describe('resend-relay-log', function () {
+    it('queues the logged payload again without logging it twice', function () {
+        Queue::fake();
+
+        $log = RelayLog::factory()->create([
+            'relay_id' => Relay::factory()->create(['type' => 'forge'])->id,
+            'payload' => ['status' => 'failed'],
+        ]);
+
+        ChismosaServer::actingAs(User::factory()->create())
+            ->tool(ResendRelayLogTool::class, ['id' => $log->id])
+            ->assertOk()
+            ->assertSee("Queued relay log {$log->id}");
+
+        Queue::assertPushed(SendRelayMessage::class, fn (SendRelayMessage $job) => $job->payload === ['status' => 'failed']);
+
+        expect(RelayLog::count())->toBe(1);
+    });
+
+    it('returns an error for a relay type without an outgoing message', function () {
+        Queue::fake();
+
+        $relay = Relay::factory()->create(['type' => 'google_chat']);
+        $log = RelayLog::factory()->create(['relay_id' => $relay->id]);
+
+        ChismosaServer::actingAs(User::factory()->create())
+            ->tool(ResendRelayLogTool::class, ['id' => $log->id])
+            ->assertHasErrors(["Relay {$relay->id} receives google_chat webhooks, which have no outgoing message to resend."]);
+
+        Queue::assertNothingPushed();
+    });
+
+    it('returns an error when the log does not exist', function () {
+        ChismosaServer::actingAs(User::factory()->create())
+            ->tool(ResendRelayLogTool::class, ['id' => 999])
             ->assertHasErrors(['Relay log 999 was not found.']);
     });
 });

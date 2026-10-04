@@ -8,6 +8,7 @@ use Filament\Actions;
 use Filament\Infolists;
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
+use App\Filament\Actions\ResendRelayLogAction;
 use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Resources\RelationManagers\RelationManager;
 
@@ -63,6 +64,7 @@ class RelayLogsRelationManager extends RelationManager
             ->actions([
                 Actions\ActionGroup::make([
                     Actions\ViewAction::make(),
+                    ResendRelayLogAction::make(),
                     Actions\DeleteAction::make(),
                 ]),
             ])

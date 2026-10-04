@@ -54,4 +54,19 @@ class Forge extends Message
             ])
             ->throw();
     }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function samplePayload(): array
+    {
+        return [
+            'status' => 'success',
+            'commit_message' => 'Test message from Chismosa. No deployment happened.',
+            'commit_hash' => 'test',
+            'commit_author' => 'Chismosa',
+            'server' => ['name' => 'Test server'],
+            'site' => ['name' => 'Test site'],
+        ];
+    }
 }

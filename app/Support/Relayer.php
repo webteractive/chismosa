@@ -7,6 +7,9 @@ use App\Models\RelayLog;
 use App\Jobs\SendRelayMessage;
 use App\Support\Messages\Forge;
 use App\Support\Messages\Message;
+use App\Exceptions\RelayDeliveryFailed;
+use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Client\ConnectionException;
 
 class Relayer
 {
@@ -50,13 +53,17 @@ class Relayer
     }
 
     /**
-     * Queue the outbound message when the relay's type has one.
+     * Queue the outbound message, returning false when the relay's type has none.
      */
-    public function notify(): void
+    public function notify(): bool
     {
-        if ($this->message()) {
-            SendRelayMessage::dispatch($this->relay, $this->payload);
+        if (! $this->message()) {
+            return false;
         }
+
+        SendRelayMessage::dispatch($this->relay, $this->payload);
+
+        return true;
     }
 
     /**
@@ -67,10 +74,41 @@ class Relayer
         $this->message()?->send();
     }
 
+    /**
+     * Send the type's sample message straight to the destination without logging it,
+     * returning false when the relay's type has no message.
+     *
+     * @throws RelayDeliveryFailed
+     */
+    public function sendTest(): bool
+    {
+        $messageClass = $this->messageClass();
+
+        if (! $messageClass) {
+            return false;
+        }
+
+        try {
+            (new $messageClass($this->relay, $messageClass::samplePayload()))->send();
+        } catch (RequestException|ConnectionException $exception) {
+            throw RelayDeliveryFailed::from($exception);
+        }
+
+        return true;
+    }
+
     protected function message(): ?Message
     {
-        $message = $this->messages[$this->relay->type] ?? null;
+        $messageClass = $this->messageClass();
 
-        return $message ? new $message($this->relay, $this->payload) : null;
+        return $messageClass ? new $messageClass($this->relay, $this->payload) : null;
+    }
+
+    /**
+     * @return class-string<Message>|null
+     */
+    protected function messageClass(): ?string
+    {
+        return $this->messages[$this->relay->type] ?? null;
     }
 }

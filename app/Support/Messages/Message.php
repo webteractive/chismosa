@@ -17,6 +17,13 @@ abstract class Message
      */
     abstract public function send(): void;
 
+    /**
+     * A payload shaped like the sending service's webhook, used to test a relay.
+     *
+     * @return array<string, mixed>
+     */
+    abstract public static function samplePayload(): array;
+
     public function payload(string $key, mixed $default = null): mixed
     {
         return Arr::get($this->payload, $key, $default);

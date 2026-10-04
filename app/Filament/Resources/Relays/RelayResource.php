@@ -11,6 +11,7 @@ use Filament\Infolists;
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
+use App\Filament\Actions\TestRelayAction;
 use Filament\Tables\Enums\RecordActionsPosition;
 
 class RelayResource extends Resource
@@ -141,6 +142,7 @@ class RelayResource extends Resource
                 Actions\ActionGroup::make([
                     Actions\ViewAction::make(),
                     Actions\EditAction::make(),
+                    TestRelayAction::make(),
                 ]),
             ])
             ->recordActionsPosition(RecordActionsPosition::BeforeCells)

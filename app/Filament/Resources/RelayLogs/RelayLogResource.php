@@ -11,6 +11,7 @@ use App\Models\RelayLog;
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use Filament\Resources\Resource;
+use App\Filament\Actions\ResendRelayLogAction;
 use Filament\Tables\Enums\RecordActionsPosition;
 
 class RelayLogResource extends Resource
@@ -82,6 +83,7 @@ class RelayLogResource extends Resource
             ->actions([
                 Actions\ActionGroup::make([
                     Actions\ViewAction::make(),
+                    ResendRelayLogAction::make(),
                     Actions\DeleteAction::make(),
                 ]),
             ])

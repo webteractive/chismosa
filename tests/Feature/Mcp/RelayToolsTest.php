@@ -5,12 +5,16 @@ use App\Models\Relay;
 use App\Models\RelayKey;
 use App\Models\RelayLog;
 use App\Mcp\Tools\GetRelayTool;
+use App\Mcp\Tools\TestRelayTool;
 use App\Mcp\Tools\ListRelaysTool;
 use App\Mcp\Tools\CreateRelayTool;
 use App\Mcp\Tools\DeleteRelayTool;
 use App\Mcp\Tools\UpdateRelayTool;
 use App\Mcp\Servers\ChismosaServer;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Testing\Fluent\AssertableJson;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
@@ -215,5 +219,59 @@ describe('delete-relay', function () {
         ChismosaServer::actingAs(User::factory()->create())
             ->tool(DeleteRelayTool::class, ['id' => 999])
             ->assertHasErrors(['Relay 999 was not found.']);
+    });
+});
+
+describe('test-relay', function () {
+    it('sends a sample message to the destination without logging it', function () {
+        Http::fake();
+
+        $relay = Relay::factory()->create(['type' => 'forge', 'webhook_url' => 'https://chat.example.com/hook']);
+
+        ChismosaServer::actingAs(User::factory()->create())
+            ->tool(TestRelayTool::class, ['id' => $relay->id])
+            ->assertOk()
+            ->assertSee('it was accepted');
+
+        Http::assertSent(fn (Request $request) => $request->url() === 'https://chat.example.com/hook');
+
+        expect(RelayLog::count())->toBe(0);
+    });
+
+    it('reports a rejection without revealing the webhook URL', function () {
+        Http::fake(['*' => Http::response('nope', 500)]);
+
+        $relay = Relay::factory()->create([
+            'type' => 'forge',
+            'webhook_url' => 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=secret-token',
+        ]);
+
+        ChismosaServer::actingAs(User::factory()->create())
+            ->tool(TestRelayTool::class, ['id' => $relay->id])
+            ->assertHasErrors(["The test message for relay {$relay->id} failed. The destination rejected the message with HTTP 500."])
+            ->assertDontSee('secret-token');
+    });
+
+    it('reports an unreachable destination without revealing the webhook URL', function () {
+        Http::fake(fn () => throw new ConnectionException('cURL error 6 for https://chat.googleapis.com/messages?key=secret-token'));
+
+        $relay = Relay::factory()->create(['type' => 'forge']);
+
+        ChismosaServer::actingAs(User::factory()->create())
+            ->tool(TestRelayTool::class, ['id' => $relay->id])
+            ->assertHasErrors(["The test message for relay {$relay->id} failed. The destination could not be reached."])
+            ->assertDontSee('secret-token');
+    });
+
+    it('returns an error for a relay type without an outgoing message', function () {
+        Http::fake();
+
+        $relay = Relay::factory()->create(['type' => 'google_chat']);
+
+        ChismosaServer::actingAs(User::factory()->create())
+            ->tool(TestRelayTool::class, ['id' => $relay->id])
+            ->assertHasErrors(["Relay {$relay->id} receives google_chat webhooks, which have no outgoing message to test."]);
+
+        Http::assertNothingSent();
     });
 });
