@@ -13,7 +13,7 @@
         "gemini"
     ],
     "guidelines": true,
-    "herd_mcp": true,
+    "herd_mcp": false,
     "mcp": true,
     "nightwatch": false,
     "sail": false,
@@ -22,6 +22,8 @@
         "deploying-to-cloud",
         "laravel-best-practices",
         "testing-best-practices",
-        "configuring-horizon"
+        "configuring-horizon",
+        "mcp-development",
+        "passport-development"
     ]
 }

@@ -36,7 +36,7 @@ There is no frontend build step. The admin panel uses Filament's own published a
 - PHP 8.3+
 - Composer
 - Redis, with the `redis` PHP extension
-- [Laravel Herd](https://herd.laravel.com) (recommended)
+- Yard (recommended) for serving the site locally
 
 ### Installation
 
@@ -56,7 +56,7 @@ Then in `.env`:
 
 ### Running Locally
 
-With Laravel Herd, the app is automatically available at `https://chismosa.test`.
+With Yard, link the site once with `yard init --yes chismosa` and `yard secure chismosa`, set `APP_URL=https://chismosa.yard`, and the app is served at `https://chismosa.yard`.
 
 Messages are only delivered while Horizon is running:
 
